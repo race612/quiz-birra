@@ -100,18 +100,18 @@
             background-color: #16a34a; 
         }
         .share-button {
-            background-color: #3b82f6; 
+            background-color: #3b82f6; /* Blu per il pulsante Condividi */
         }
         .share-button:hover {
             background-color: #2563eb;
         }
         .home-button {
-            background-color: #6b7280; 
+            background-color: #6b7280; /* Grigio per il pulsante Home */
         }
         .home-button:hover {
             background-color: #4b5563;
         }
-        .input-field { /* Mantenuto per playerNameInput */
+        .input-field {
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 0.75rem 1rem;
@@ -123,7 +123,7 @@
             box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
             outline: none;
         }
-        
+
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
           -webkit-appearance: none;
@@ -139,7 +139,7 @@
     <div id="appContainer" class="app-container">
         <!-- Schermata Inserimento Nome e Selezione Modalità -->
         <div id="nameScreenContainer" class="text-center">
-            <div class="header-logo-wrapper mb-4"> 
+            <div class="header-logo-wrapper mb-4"> <!-- Wrapper per il logo con margine specifico -->
                 <svg class="header-logo-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Icona Birra">
                   <defs>
                     <linearGradient id="beerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -166,18 +166,17 @@
             
             <p class="text-gray-600 mb-3 text-sm sm:text-base">Scegli la modalità di gioco:</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md mx-auto mb-4">
-                <button id="startClassicModeButton" class="action-button" disabled>Modalità Classica</button>
-                <button id="startTimedModeButton" class="action-button mode-button" disabled>Modalità a Tempo</button>
+                <button id="startClassicModeButton" class="action-button">Modalità Classica</button>
+                <button id="startTimedModeButton" class="action-button mode-button">Modalità a Tempo</button>
             </div>
-            <p id="questionLoadStatus" class="text-sm mt-2 h-5"></p> 
         </div>
 
         <!-- Contenitore Principale del Quiz -->
         <div id="quizApp" class="hidden">
-             <div class="header-logo-wrapper"> 
+             <div class="header-logo-wrapper"> <!-- Wrapper per il logo -->
                 <svg class="header-logo-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Icona Birra">
                   <defs>
-                    <linearGradient id="beerGrad2" x1="0%" y1="0%" x2="0%" y2="100%"> 
+                    <linearGradient id="beerGrad2" x1="0%" y1="0%" x2="0%" y2="100%"> {/* ID diverso per evitare conflitti se SVG fosse ripetuto con lo stesso ID defs */}
                       <stop offset="0%" style="stop-color:#FBBF24;"/>
                       <stop offset="100%" style="stop-color:#F59E0B;"/>
                     </linearGradient>
@@ -265,8 +264,6 @@
         const nameError = document.getElementById('nameError');
         const startClassicModeButton = document.getElementById('startClassicModeButton');
         const startTimedModeButton = document.getElementById('startTimedModeButton');
-        const questionLoadStatus = document.getElementById('questionLoadStatus');
-
 
         const quizAppDiv = document.getElementById('quizApp');
         const quizModeTitle = document.getElementById('quizModeTitle');
@@ -366,7 +363,7 @@
             { question: "Il termine 'Brettanomyces' si riferisce a un tipo di...?", options: ["Batterio acetico", "Lievito selvaggio", "Enzima del malto", "Tipo di luppolo"], correctAnswer: "Lievito selvaggio" },
             { question: "Quale stile di birra belga è spesso speziato con coriandolo e buccia d'arancia amara?", options: ["Dubbel", "Tripel", "Witbier", "Flanders Red Ale"], correctAnswer: "Witbier" }
         ];
-        // allQuestions verrà popolato dalla funzione loadQuestions
+        allQuestions = [...defaultQuestionsPool]; 
 
 
         // --- Funzioni UI e Logica Quiz ---
@@ -379,62 +376,9 @@
             if (screenElement) screenElement.classList.remove('hidden');
         }
 
-        async function loadQuestions() {
-            questionLoadStatus.textContent = "Caricamento domande...";
-            questionLoadStatus.className = 'text-sm mt-2 h-5 text-gray-500';
-            startClassicModeButton.disabled = true;
-            startTimedModeButton.disabled = true;
-
-            try {
-                const response = await fetch('questions.json'); // Carica da questions.json
-                if (!response.ok) {
-                    // Se questions.json non è trovato o c'è un errore, usa quelle di default
-                    console.warn(`File questions.json non trovato o errore ${response.status}. Uso domande di default.`);
-                    allQuestions = [...defaultQuestionsPool];
-                    if (allQuestions.length > 0) {
-                        questionLoadStatus.textContent = "Usate domande predefinite.";
-                        questionLoadStatus.className = 'text-sm mt-2 h-5 text-yellow-600';
-                    } else {
-                         questionLoadStatus.textContent = "Errore: Nessuna domanda disponibile.";
-                         questionLoadStatus.className = 'text-sm mt-2 h-5 text-red-500';
-                         return; // Esce se anche le domande di default non ci sono (improbabile)
-                    }
-                } else {
-                    const externalQuestions = await response.json();
-                    if (Array.isArray(externalQuestions) && externalQuestions.every(q => q.question && q.options && q.correctAnswer)) {
-                        allQuestions = externalQuestions; // Usa solo le domande dal file JSON se caricato con successo
-                        questionLoadStatus.textContent = `${allQuestions.length} domande caricate da file!`;
-                        questionLoadStatus.className = 'text-sm mt-2 h-5 text-green-600';
-                    } else {
-                        throw new Error("Formato JSON non valido o struttura domande errata.");
-                    }
-                }
-            } catch (error) {
-                console.error("Impossibile caricare questions.json, uso domande di default:", error);
-                allQuestions = [...defaultQuestionsPool];
-                if (allQuestions.length > 0) {
-                    questionLoadStatus.textContent = "Errore caricamento file, usate domande predefinite.";
-                    questionLoadStatus.className = 'text-sm mt-2 h-5 text-yellow-600';
-                } else {
-                    questionLoadStatus.textContent = "Errore critico: Nessuna domanda disponibile.";
-                    questionLoadStatus.className = 'text-sm mt-2 h-5 text-red-500';
-                    return;
-                }
-            }
-
-            if (allQuestions.length > 0) {
-                startClassicModeButton.disabled = false;
-                startTimedModeButton.disabled = false;
-            } else {
-                questionLoadStatus.textContent = "Nessuna domanda da caricare. L'app non può iniziare.";
-                questionLoadStatus.className = 'text-sm mt-2 h-5 text-red-500';
-            }
-        }
-
-
         function handleStartGame(mode) {
             if (allQuestions.length === 0) { 
-                nameError.textContent = "Le domande non sono ancora state caricate. Attendi o ricarica.";
+                nameError.textContent = "Errore nel caricamento delle domande. Riprova più tardi.";
                 return;
             }
             const name = playerNameInput.value.trim().toUpperCase(); 
@@ -458,9 +402,6 @@
             showScreen(nameScreenContainer)
         });
 
-        // Rimuovo il listener per loadExternalFileButton perché il caricamento è automatico
-        // loadExternalFileButton.addEventListener('click', ...);
-
 
         function shuffleArray(array) {
             const newArray = [...array];
@@ -479,12 +420,7 @@
             }
             currentQuizQuestions = shuffleArray(allQuestions); 
             if (currentGameMode === 'classic') {
-                // Assicurati che ci siano abbastanza domande per la modalità classica
-                if (currentQuizQuestions.length < CLASSIC_QUESTIONS_PER_QUIZ) {
-                    console.warn(`Non ci sono abbastanza domande (${currentQuizQuestions.length}) per la modalità classica (${CLASSIC_QUESTIONS_PER_QUIZ}). Si useranno tutte quelle disponibili.`);
-                }
-                currentQuizQuestions = currentQuizQuestions.slice(0, Math.min(currentQuizQuestions.length, CLASSIC_QUESTIONS_PER_QUIZ));
-
+                currentQuizQuestions = currentQuizQuestions.slice(0, CLASSIC_QUESTIONS_PER_QUIZ);
             }
             
             currentQuestionIndex = 0;
@@ -514,11 +450,10 @@
 
             if (currentQuizQuestions.length > 0) {
                 loadQuestion();
-            } else { // Questo non dovrebbe accadere se la logica di startQuiz è corretta
-                questionTextElement.textContent = "Errore: Non ci sono abbastanza domande per questa modalità.";
+            } else {
+                questionTextElement.textContent = "Errore: Non ci sono abbastanza domande.";
                 optionsContainer.innerHTML = '';
-                 showScreen(nameScreenContainer); // Torna alla home se non ci sono domande per la modalità
-                nameError.textContent = "Non ci sono abbastanza domande per la modalità selezionata.";
+                if(currentGameMode === 'classic') progressBar.style.width = '0%';
             }
         }
 
@@ -542,14 +477,14 @@
 
         function loadQuestion() {
             if (currentGameMode === 'timed' && timeLeft <= 0) return;
-            
-            // Controllo se ci sono ancora domande da mostrare per la modalità corrente
-            const maxQuestionsForMode = currentGameMode === 'classic' ? CLASSIC_QUESTIONS_PER_QUIZ : allQuestions.length;
-            if (currentQuestionIndex >= currentQuizQuestions.length || currentQuestionIndex >= maxQuestionsForMode ) {
+            if (currentQuestionIndex >= currentQuizQuestions.length) {
                 finalizeQuiz();
                 return;
             }
-
+            if (currentGameMode === 'classic' && currentQuestionIndex >= CLASSIC_QUESTIONS_PER_QUIZ) {
+                finalizeQuiz();
+                return;
+            }
 
             const currentQuestion = currentQuizQuestions[currentQuestionIndex];
             questionTextElement.textContent = currentQuestion.question;
@@ -566,7 +501,7 @@
             });
 
             if (currentGameMode === 'classic') {
-                questionNumberElement.textContent = `Domanda ${currentQuestionIndex + 1} di ${currentQuizQuestions.length}`; // Usa la lunghezza effettiva del set per la modalità classica
+                questionNumberElement.textContent = `Domanda ${currentQuestionIndex + 1} di ${CLASSIC_QUESTIONS_PER_QUIZ}`;
                 updateProgressBar();
             } else {
                  questionNumberElement.textContent = `Domanda ${currentQuestionIndex + 1}`; 
@@ -575,7 +510,7 @@
 
         function updateProgressBar() { 
             if (currentGameMode === 'classic') {
-                const progressPercentage = ((currentQuestionIndex) / currentQuizQuestions.length) * 100; // Basato sul numero effettivo di domande per la modalità
+                const progressPercentage = ((currentQuestionIndex) / CLASSIC_QUESTIONS_PER_QUIZ) * 100;
                 progressBar.style.width = `${progressPercentage}%`;
             }
         }
@@ -598,11 +533,10 @@
             Array.from(optionsContainer.children).forEach(button => button.disabled = true);
 
             currentQuestionIndex++;
-            const maxQuestionsForMode = currentGameMode === 'classic' ? CLASSIC_QUESTIONS_PER_QUIZ : allQuestions.length;
-            const isLastQuestionClassic = currentGameMode === 'classic' && currentQuestionIndex >= currentQuizQuestions.length; // currentQuizQuestions è già tagliato per la classica
-            const isLastQuestionOverall = currentQuestionIndex >= currentQuizQuestions.length; // Per la modalità a tempo, confronta con tutte le domande disponibili
+            const isLastQuestionClassic = currentGameMode === 'classic' && currentQuestionIndex >= CLASSIC_QUESTIONS_PER_QUIZ;
+            const isLastQuestionOverall = currentQuestionIndex >= currentQuizQuestions.length;
 
-            if (isLastQuestionClassic || (currentGameMode === 'timed' && isLastQuestionOverall) || (currentGameMode === 'timed' && timeLeft <=0) ) {
+            if (isLastQuestionClassic || isLastQuestionOverall || (currentGameMode === 'timed' && timeLeft <=0) ) {
                  finalizeQuiz();
             } else {
                  loadQuestion(); 
@@ -622,11 +556,11 @@
 
             let feedbackMsg = "";
             if (currentGameMode === 'classic') {
-                const totalPossibleScore = currentQuizQuestions.length * 0.5; // Basato sul numero effettivo di domande usate
+                const totalPossibleScore = CLASSIC_QUESTIONS_PER_QUIZ * 0.5;
                 finalScoreText.textContent = `Punteggio Modalità Classica: ${score.toLocaleString('it-IT')} / ${totalPossibleScore.toLocaleString('it-IT')}`;
-                if (score === totalPossibleScore && totalPossibleScore > 0) feedbackMsg = "Commento per punteggio perfetto (Classica).";
-                else if (score >= totalPossibleScore * 0.8 && totalPossibleScore > 0) feedbackMsg = "Commento per punteggio molto alto (Classica).";
-                else if (score >= totalPossibleScore * 0.5 && totalPossibleScore > 0) feedbackMsg = "Commento per punteggio medio (Classica).";
+                if (score === totalPossibleScore) feedbackMsg = "Commento per punteggio perfetto (Classica).";
+                else if (score >= totalPossibleScore * 0.8) feedbackMsg = "Commento per punteggio molto alto (Classica).";
+                else if (score >= totalPossibleScore * 0.5) feedbackMsg = "Commento per punteggio medio (Classica).";
                 else feedbackMsg = "Commento per punteggio basso (Classica).";
             } else { 
                 finalScoreText.textContent = `Punteggio Modalità a Tempo: ${score.toLocaleString('it-IT')}`;
@@ -651,9 +585,11 @@
                 windowWidth: document.documentElement.scrollWidth, 
                 windowHeight: document.documentElement.scrollHeight, 
                 onclone: (clonedDoc) => {
+                    // Per assicurarsi che lo sfondo dell'app container sia visibile nello screenshot
+                    // se il body ha uno sfondo diverso o trasparente di default in html2canvas
                     const appContainerClone = clonedDoc.getElementById('appContainer');
                     if (appContainerClone) {
-                        appContainerClone.style.backgroundColor = "#ffffff"; 
+                        appContainerClone.style.backgroundColor = "#ffffff"; // Sfondo bianco dell'app
                     }
                 }
             }).then(canvas => {
@@ -672,10 +608,18 @@
             });
         });
 
-        // Carica le domande all'avvio dell'app
-        loadQuestions().then(() => {
-            showScreen(nameScreenContainer); 
-        });
+
+        // Inizializza le domande e poi mostra la schermata iniziale
+        if (defaultQuestionsPool && defaultQuestionsPool.length > 0) {
+            allQuestions = [...defaultQuestionsPool];
+            startClassicModeButton.disabled = false;
+            startTimedModeButton.disabled = false;
+            showScreen(nameScreenContainer);
+        } else {
+            nameError.textContent = "Errore: domande non definite nel codice.";
+            startClassicModeButton.disabled = true;
+            startTimedModeButton.disabled = true;
+        }
 
     </script>
 </body>
