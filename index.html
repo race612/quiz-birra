@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz sulla Birra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fefce8; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 768px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            padding: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .app-container {
+                padding: 2.5rem;
+            }
+        }
+
+        .option-button {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid #fbbf24;
+        }
+        .option-button:hover {
+            background-color: #fde68a;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+        .option-button:active {
+            transform: scale(0.97);
+            background-color: #facc15;
+        }
+        .header-image {
+            width: 70px;
+            height: auto;
+            margin: 0 auto 1rem;
+            display: block;
+        }
+        .progress-bar-container { 
+            width: 100%;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #fbbf24;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+            border-radius: 8px;
+        }
+        .timer-display {
+            font-size: 1.875rem; 
+            font-weight: 700;
+            color: #d97706; 
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: #fef3c7; 
+            border-radius: 8px;
+            border: 2px solid #fcd34d; 
+        }
+        .action-button {
+             background-color: #f59e0b;
+             color: white;
+             font-weight: 600;
+             padding: 0.65rem 1.25rem;
+             border-radius: 8px;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+             transition: background-color 0.2s ease;
+        }
+        .action-button:hover {
+            background-color: #d97706;
+        }
+        .mode-button { 
+            background-color: #22c55e; 
+        }
+        .mode-button:hover {
+            background-color: #16a34a; 
+        }
+        .input-field {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-field:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+            outline: none;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="appContainer" class="app-container">
+        <!-- Schermata Inserimento Nome e Selezione Modalità -->
+        <div id="nameScreenContainer" class="text-center">
+            <img src="https://placehold.co/120x120/FBBF24/FFFFFF?text=🍺" alt="Icona Birra" class="header-image rounded-full mb-4" onerror="this.src='https://placehold.co/100x100/cccccc/333333?text=ErroreImmagine'">
+            <h1 class="text-2xl sm:text-3xl font-bold text-yellow-600 mb-3">Benvenuto al Quiz Birrario!</h1>
+            <p class="text-gray-600 mb-2 text-sm sm:text-base">Inserisci il tuo nome (max 12 caratteri):</p>
+            <input type="text" id="playerNameInput" maxlength="12" class="input-field mb-3 w-full max-w-sm mx-auto" placeholder="Il tuo nome">
+            <p id="nameError" class="text-red-500 text-xs mb-4 h-4"></p>
+            
+            <p class="text-gray-600 mb-3 text-sm sm:text-base">Scegli la modalità di gioco:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md mx-auto mb-4">
+                <button id="startClassicModeButton" class="action-button">Modalità Classica</button>
+                <button id="startTimedModeButton" class="action-button mode-button">Modalità a Tempo (2 min)</button>
+            </div>
+        </div>
+
+        <!-- Contenitore Principale del Quiz -->
+        <div id="quizApp" class="hidden">
+            <img src="https://placehold.co/120x120/FBBF24/FFFFFF?text=🍺" alt="Icona Birra" class="header-image rounded-full" onerror="this.src='https://placehold.co/100x100/cccccc/333333?text=ErroreImmagine'">
+            <h1 id="quizModeTitle" class="text-xl sm:text-2xl font-bold text-center text-yellow-700 mb-2"></h1>
+            <div id="timerDisplayContainer" class="hidden text-center">
+                <p class="timer-display" id="timerText">02:00</p>
+            </div>
+            <div id="scoreDisplayTimedMode" class="hidden text-center text-lg font-semibold text-blue-600 mb-3">
+                Punteggio: <span id="currentScoreTimed">0</span>
+            </div>
+
+            <div id="questionContainer" class="mb-5">
+                <div id="progressBarContainer" class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <p id="questionNumber" class="text-xs text-right text-gray-400 mb-1"></p>
+                <p id="questionText" class="text-lg sm:text-xl font-semibold text-gray-800 mb-5 min-h-[50px] flex items-center justify-center text-center"></p>
+                <div id="optionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3"></div>
+            </div>
+
+            <div id="scoreContainer" class="hidden text-center">
+                <h2 class="text-xl sm:text-2xl font-bold text-yellow-600 mb-3">Quiz Completato!</h2>
+                <p id="finalScoreText" class="text-lg text-gray-700 mb-2"></p>
+                <p id="scoreFeedbackText" class="text-md text-gray-600 mb-5"></p>
+                <button id="restartButton" class="action-button">Rigioca</button>
+            </div>
+        </div>
+
+        <!-- Messaggio di Caricamento Domande Quiz -->
+        <div id="quizLoadingMessage" class="hidden text-center text-gray-600 py-8">
+            <svg class="animate-spin h-8 w-8 text-yellow-500 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p>Sto spillando le domande...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Non sono più necessarie le importazioni specifiche di Firestore per le classifiche
+        // Mantengo le importazioni base di Firebase se altre funzionalità le usassero in futuro,
+        // ma per ora, con la rimozione delle classifiche, `db` e le operazioni Firestore non sono usate.
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-beer-quiz'; // Non più usato per i path delle collection
+
+        let app, auth, /*db,*/ userId; // db non è più inizializzato o usato
+
+        if (firebaseConfig) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            // db = getFirestore(app); // Non inizializzo più db
+            // setLogLevel('debug'); 
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                } else {
+                    try {
+                        if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
+                        else await signInAnonymously(auth);
+                    } catch (error) { console.error("Auth Error:", error); }
+                }
+            });
+        } else {
+            console.warn("Firebase config not found. L'app funzionerà senza funzionalità online.");
+        }
+
+        const nameScreenContainer = document.getElementById('nameScreenContainer');
+        const playerNameInput = document.getElementById('playerNameInput');
+        const nameError = document.getElementById('nameError');
+        const startClassicModeButton = document.getElementById('startClassicModeButton');
+        const startTimedModeButton = document.getElementById('startTimedModeButton');
+        // Rimozione variabili elementi leaderboard
+        // const viewLeaderboardSelectionButton = document.getElementById('viewLeaderboardSelectionButton');
+        // const leaderboardSelectionScreen = document.getElementById('leaderboardSelectionScreen');
+        // const viewClassicLeaderboardButton = document.getElementById('viewClassicLeaderboardButton');
+        // const viewTimedLeaderboardButton = document.getElementById('viewTimedLeaderboardButton');
+        // const backToHomeButton = document.getElementById('backToHomeButton');
+
+        const quizAppDiv = document.getElementById('quizApp');
+        const quizModeTitle = document.getElementById('quizModeTitle');
+        const timerDisplayContainer = document.getElementById('timerDisplayContainer');
+        const timerText = document.getElementById('timerText');
+        const scoreDisplayTimedMode = document.getElementById('scoreDisplayTimedMode');
+        const currentScoreTimed = document.getElementById('currentScoreTimed');
+
+        const questionContainer = document.getElementById('questionContainer');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progressBar = document.getElementById('progressBar');
+        const questionNumberElement = document.getElementById('questionNumber');
+        const questionTextElement = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        
+        const scoreContainer = document.getElementById('scoreContainer');
+        const finalScoreText = document.getElementById('finalScoreText');
+        const scoreFeedbackText = document.getElementById('scoreFeedbackText');
+        const restartButton = document.getElementById('restartButton'); 
+        // const showThisLeaderboardButton = document.getElementById('showThisLeaderboardButton'); 
+
+        const quizLoadingMessage = document.getElementById('quizLoadingMessage');
+        // const leaderboardDisplayScreen = document.getElementById('leaderboardDisplayScreen'); 
+        // const leaderboardTitle = document.getElementById('leaderboardTitle');
+        // const leaderboardLoading = document.getElementById('leaderboardLoading');
+        // const leaderboardListElement = document.getElementById('leaderboardList'); 
+        // const backToLeaderboardSelectionButton = document.getElementById('backToLeaderboardSelectionButton');
+        // const playAgainFromLeaderboardButton = document.getElementById('playAgainFromLeaderboardButton');
+
+        let currentPlayerName = "";
+        let allQuestions = []; 
+        let currentQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentGameMode = 'classic'; 
+        const CLASSIC_QUESTIONS_PER_QUIZ = 20;
+        const TIMED_MODE_DURATION = 120; 
+        let timerInterval;
+        let timeLeft = TIMED_MODE_DURATION;
+
+        // Rimozione costanti collection leaderboard
+        // const LEADERBOARD_COLLECTION_CLASSIC = `artifacts/${appId}/public/data/beerQuizLeaderboardClassic`;
+        // const LEADERBOARD_COLLECTION_TIMED = `artifacts/${appId}/public/data/beerQuizLeaderboardTimed`;
+
+        const defaultQuestionsPool = [
+            { question: "Quale di questi stili è di origini tedesca?", options: ["Geuze", "Bitter", "Gose", "IPA"], correctAnswer: "Gose" },
+            { question: "Quale birrificio è considerato l'inventore delle Italian Pils?", options: ["Birrificio Lambrate", "Birrificio Italiano", "Birra Baladin", "Birrificio Menaresta"], correctAnswer: "Birrificio Italiano" },
+            { question: "Quale ingrediente principale conferisce l'amaro alla birra?", options: ["Malto", "Lievito", "Acqua", "Luppolo"], correctAnswer: "Luppolo" },
+            { question: "Come si chiama il processo di conversione degli zuccheri in alcol e CO2 da parte del lievito?", options: ["Macerazione", "Fermentazione", "Pastorizzazione", "Amaricatura"], correctAnswer: "Fermentazione" },
+            { question: "Qual è l'unità di misura dell'amaro nella birra (International Bitterness Units)?", options: ["ABV", "IBU", "SRM", "OG"], correctAnswer: "IBU" },
+            { question: "Quale paese è famoso per le birre Trappiste?", options: ["Germania", "Repubblica Ceca", "Belgio", "Stati Uniti"], correctAnswer: "Belgio" },
+            { question: "Cosa indica l'acronimo 'IPA' nel mondo della birra?", options: ["India Pale Ale", "Irish Porter Ale", "Italian Pilsner Ale", "Imperial Pale Ale"], correctAnswer: "India Pale Ale" },
+            { question: "Quale di questi NON è un tipo di malto?", options: ["Pilsner", "Monaco", "Crystal", "Cascade"], correctAnswer: "Cascade" },
+            { question: "La legge tedesca sulla purezza della birra del 1516 si chiama:", options: ["Reinheitsgebot", "Biergesetz", "Qualitätsbier Verordnung", "Deutsches Bierdekret"], correctAnswer: "Reinheitsgebot" },
+            { question: "Quale stile di birra è tipicamente scuro, tostato e con note di caffè o cioccolato?", options: ["Saison", "Stout", "Witbier", "Helles"], correctAnswer: "Stout" },
+            { question: "Quale stile di birra belga è noto per la sua fermentazione spontanea?", options: ["Tripel", "Dubbel", "Lambic", "Saison"], correctAnswer: "Lambic" },
+            { question: "Cosa significa 'Dry Hopping'?", options: ["Aggiungere luppolo durante la bollitura", "Aggiungere luppolo a freddo dopo la fermentazione", "Usare luppolo essiccato", "Coltivare luppolo in climi secchi"], correctAnswer: "Aggiungere luppolo a freddo dopo la fermentazione" },
+            { question: "Quale cereale, oltre all'orzo, è comunemente usato nelle Witbier?", options: ["Segale", "Avena", "Mais", "Frumento non maltato"], correctAnswer: "Frumento non maltato" },
+            { question: "La 'Kölsch' è uno stile di birra tipico di quale città tedesca?", options: ["Monaco", "Berlino", "Colonia", "Amburgo"], correctAnswer: "Colonia" },
+            { question: "Qual è il nome del processo di riscaldamento del mosto per estrarre gli zuccheri dal malto?", options: ["Filtrazione", "Bollitura", "Ammostamento", "Fermentazione primaria"], correctAnswer: "Ammostamento" },
+            { question: "Una birra 'Barley Wine' è tipicamente:", options: ["Leggera e dissetante", "Amara e secca", "Molto alcolica e maltata", "Acida e fruttata"], correctAnswer: "Molto alcolica e maltata" },
+            { question: "Quale gas viene comunemente usato per spillare le birre Stout e conferire una schiuma cremosa?", options: ["Anidride Carbonica (CO2)", "Ossigeno", "Azoto", "Argon"], correctAnswer: "Azoto" },
+            { question: "Lo stile 'Saison' ha origine come birra per:", options: ["Monaci durante la quaresima", "Nobili durante le feste", "Lavoratori agricoli stagionali", "Marinai durante i lunghi viaggi"], correctAnswer: "Lavoratori agricoli stagionali" },
+            { question: "Cosa misura la scala SRM (Standard Reference Method) nella birra?", options: ["L'amaro", "Il grado alcolico", "Il colore", "La densità"], correctAnswer: "Il colore" },
+            { question: "Quale di questi è un famoso festival della birra tedesco che si tiene a Monaco?", options: ["Cannstatter Volksfest", "Oktoberfest", "Berliner Bierfestival", "Bremer Freimarkt"], correctAnswer: "Oktoberfest" },
+            { question: "Le birre 'Rauchbier' sono caratterizzate da un aroma di:", options: ["Frutta tropicale", "Spezie", "Affumicato", "Fiori"], correctAnswer: "Affumicato" },
+            { question: "Qual è il ruolo principale del lievito nella produzione della birra?", options: ["Conferire colore", "Amaricare il mosto", "Convertire zuccheri in alcol e CO2", "Chiarificare la birra"], correctAnswer: "Convertire zuccheri in alcol e CO2" },
+            { question: "Una 'Doppelbock' tedesca ha spesso nomi che terminano in:", options: ["-pils", "-hell", "-ator", "-weizen"], correctAnswer: "-ator" },
+            { question: "Quale acido principale presente nel luppolo contribuisce all'amaro?", options: ["Acido citrico", "Acido lattico", "Beta acidi", "Alfa acidi"], correctAnswer: "Alfa acidi" },
+            { question: "Lo stile 'Porter' ha avuto origine in quale città?", options: ["Dublino", "Edimburgo", "Londra", "New York"], correctAnswer: "Londra" },
+            { question: "Cosa si intende per 'birra artigianale' (craft beer), secondo la Brewers Association USA?", options: ["Una birra fatta in casa", "Una birra prodotta in piccole quantità, da un birrificio indipendente e tradizionale", "Qualsiasi birra non industriale", "Una birra venduta solo in fusti"], correctAnswer: "Una birra prodotta in piccole quantità, da un birrificio indipendente e tradizionale" },
+            { question: "Quale di questi è un tipo di fermentazione che avviene a temperature più alte?", options: ["Fermentazione lattica", "Bassa fermentazione (Lager)", "Fermentazione acetica", "Alta fermentazione (Ale)"], correctAnswer: "Alta fermentazione (Ale)" },
+            { question: "Il 'Gueuze' è un blend di:", options: ["Stout e Porter", "Lambic giovani e vecchi", "Birre chiare e scure", "Birre fruttate e speziate"], correctAnswer: "Lambic giovani e vecchi" },
+            { question: "Quale stile di birra americano è noto per il suo intenso aroma di luppolo agrumato/resinoso?", options: ["American Lager", "Cream Ale", "American Pale Ale / IPA", "Amber Ale"], correctAnswer: "American Pale Ale / IPA" },
+            { question: "La 'Bière de Garde' è uno stile tradizionale di quale paese?", options: ["Belgio", "Paesi Bassi", "Germania", "Francia"], correctAnswer: "Francia" },
+            { question: "Cosa si intende per 'condizionamento in bottiglia'?", options: ["Pastorizzazione in bottiglia", "Etichettatura delle bottiglie", "Una seconda fermentazione che avviene in bottiglia", "Raffreddamento rapido delle bottiglie"], correctAnswer: "Una seconda fermentazione che avviene in bottiglia" },
+            { question: "Quale ingrediente può essere aggiunto per aumentare il corpo e la dolcezza di una Milk Stout?", options: ["Miele", "Sciroppo d'acero", "Lattosio", "Destrosio"], correctAnswer: "Lattosio" },
+            { question: "Le birre 'Pilsner' originali provengono da quale città?", options: ["Praga", "Budapest", "Plzeň", "Vienna"], correctAnswer: "Plzeň" },
+            { question: "Qual è la differenza principale tra una Ale e una Lager?", options: ["Il colore", "Il grado alcolico", "Il tipo di malto usato", "Il tipo di lievito e la temperatura di fermentazione"], correctAnswer: "Il tipo di lievito e la temperatura di fermentazione" },
+            { question: "Lo stile 'Altbier' è tradizionale di quale città tedesca?", options: ["Berlino", "Düsseldorf", "Francoforte", "Stoccarda"], correctAnswer: "Düsseldorf" },
+            { question: "Cosa significa l'acronimo 'ABV'?", options: ["Average Beer Volume", "Alcohol By Volume", "Actual Bitterness Value", "American Brewers Verification"], correctAnswer: "Alcohol By Volume" },
+            { question: "Quale di questi è un difetto comune nella birra, che sa di cartone bagnato?", options: ["Diacetile", "Acetobacter", "Ossidazione", "Lieviti selvaggi"], correctAnswer: "Ossidazione" },
+            { question: "Le 'Trappist Ales' devono essere prodotte:", options: ["Esclusivamente con acqua di sorgente trappista", "In qualsiasi birrificio con licenza trappista", "All'interno di un'abbazia trappista, sotto il controllo dei monaci", "Solo durante periodi di preghiera"], correctAnswer: "All'interno di un'abbazia trappista, sotto il controllo dei monaci" },
+            { question: "Quale stile di birra è spesso associato all'uso di segale (rye)?", options: ["Hefeweizen", "Rye IPA / Roggenbier", "Scotch Ale", "Bock"], correctAnswer: "Rye IPA / Roggenbier" },
+            { question: "Il 'grist' nella produzione della birra si riferisce a:", options: ["Luppolo essiccato", "Lievito in polvere", "Malto macinato pronto per l'ammostamento", "Residui della bollitura"], correctAnswer: "Malto macinato pronto per l'ammostamento" },
+            { question: "Quale stile birrario tedesco è noto per il suo sapore leggermente salato e acidulo, spesso con coriandolo?", options: ["Berliner Weisse", "Gose", "Lichtenhainer", "Weissbier"], correctAnswer: "Gose" },
+            { question: "Il termine 'Lager' deriva da una parola tedesca che significa?", options: ["Freddo", "Chiaro", "Immagazzinare/Conservare", "Luppolato"], correctAnswer: "Immagazzinare/Conservare" },
+            { question: "Quale di questi luppoli è di origine americana e noto per i suoi aromi agrumati e di pompelmo?", options: ["Saaz", "Hallertau", "Citra", "Fuggles"], correctAnswer: "Citra" },
+            { question: "In quale paese ha origine lo stile 'Saison'?", options: ["Germania", "Francia", "Paesi Bassi", "Belgio"], correctAnswer: "Belgio" },
+            { question: "Una 'Russian Imperial Stout' è stata originariamente prodotta in Inghilterra per quale corte?", options: ["La corte francese", "La corte spagnola", "La corte imperiale russa", "La corte ottomana"], correctAnswer: "La corte imperiale russa" },
+            { question: "Cosa si intende per 'attenuazione' nella produzione della birra?", options: ["L'amarezza percepita", "La percentuale di zuccheri fermentati dal lievito", "La limpidezza della birra", "Il contenuto alcolico finale"], correctAnswer: "La percentuale di zuccheri fermentati dal lievito" },
+            { question: "Quale stile di birra è tradizionalmente servito in un bicchiere 'Stange'?", options: ["Pilsner", "Kölsch", "IPA", "Stout"], correctAnswer: "Kölsch" },
+            { question: "Il 'lambic' è una birra a fermentazione...?", options: ["Alta", "Bassa", "Mista", "Spontanea"], correctAnswer: "Spontanea" },
+            { question: "Quale di questi NON è un difetto comune della birra?", options: ["Diacetile (burroso)", "Ossidazione (cartone)", "Luppolatura fresca (aromatico)", "Contaminazione batterica (acido)"], correctAnswer: "Luppolatura fresca (aromatico)" },
+            { question: "L'Oktoberfest si tiene principalmente in quale mese?", options: ["Ottobre", "Agosto", "Novembre", "Settembre"], correctAnswer: "Settembre" },
+            { question: "Cosa significa 'Bock' in tedesco, riferito alla birra?", options: ["Scuro", "Forte", "Caprone", "Dolce"], correctAnswer: "Caprone" },
+            { question: "Quale ingrediente, oltre ai 3 classici (acqua, malto, luppolo), è permesso nel Reinheitsgebot moderno?", options: ["Frutta", "Spezie", "Lievito", "Miele"], correctAnswer: "Lievito" },
+            { question: "Lo stile 'California Common' (Steam Beer) è fermentato con lievito Lager a temperature...?", options: ["Molto basse", "Tipiche da Ale", "Più alte del normale per Lager", "Variabili"], correctAnswer: "Più alte del normale per Lager" },
+            { question: "Quale birra è associata alla festa di San Patrizio?", options: ["Lager chiara", "IPA", "Stout irlandese", "Birra di frumento"], correctAnswer: "Stout irlandese" },
+            { question: "Il processo di aggiunta di zucchero prima dell'imbottigliamento per creare carbonazione naturale si chiama?", options: ["Dry hopping", "Krausening", "Priming", "Lagering"], correctAnswer: "Priming" },
+            { question: "Qual è il nome del recipiente in cui avviene la bollitura del mosto?", options: ["Fermentatore", "Mastello di ammostamento", "Caldaia di bollitura", "Serbatoio di maturazione"], correctAnswer: "Caldaia di bollitura" },
+            { question: "Una birra 'Hazy IPA' è caratterizzata da...?", options: ["Colore scuro e note tostate", "Elevata amarezza e limpidezza cristallina", "Aspetto torbido e aromi intensi di luppolo", "Basso contenuto alcolico e sapore maltato"], correctAnswer: "Aspetto torbido e aromi intensi di luppolo" },
+            { question: "Quale stile di birra scura tedesca è simile a una Porter ma utilizza lievito Lager?", options: ["Dunkel", "Doppelbock", "Schwarzbier", "Rauchbier"], correctAnswer: "Schwarzbier" },
+            { question: "Il termine 'Brettanomyces' si riferisce a un tipo di...?", options: ["Batterio acetico", "Lievito selvaggio", "Enzima del malto", "Tipo di luppolo"], correctAnswer: "Lievito selvaggio" },
+            { question: "Quale stile di birra belga è spesso speziato con coriandolo e buccia d'arancia amara?", options: ["Dubbel", "Tripel", "Witbier", "Flanders Red Ale"], correctAnswer: "Witbier" }
+        ];
+        allQuestions = [...defaultQuestionsPool]; 
+
+
+        // --- Funzioni UI e Logica Quiz ---
+        function showScreen(screenElement) {
+            nameScreenContainer.classList.add('hidden');
+            // leaderboardSelectionScreen.classList.add('hidden'); // Rimosso
+            quizAppDiv.classList.add('hidden');
+            quizLoadingMessage.classList.add('hidden');
+            // leaderboardDisplayScreen.classList.add('hidden'); // Rimosso
+            scoreContainer.classList.add('hidden'); 
+            questionContainer.classList.add('hidden');
+            if (screenElement) screenElement.classList.remove('hidden');
+        }
+
+        function handleStartGame(mode) {
+            if (allQuestions.length === 0) { 
+                nameError.textContent = "Errore nel caricamento delle domande. Riprova più tardi.";
+                return;
+            }
+            const name = playerNameInput.value.trim().toUpperCase(); 
+            if (name.length > 0 && name.length <= 12) {
+                currentPlayerName = name;
+                currentGameMode = mode;
+                nameError.textContent = '';
+                showScreen(quizLoadingMessage);
+                setTimeout(startQuiz, 700); 
+            } else if (name.length === 0) {
+                nameError.textContent = 'Per favore, inserisci un nome.';
+            } else {
+                nameError.textContent = 'Il nome deve avere massimo 12 caratteri.';
+            }
+        }
+        
+        startClassicModeButton.addEventListener('click', () => handleStartGame('classic'));
+        startTimedModeButton.addEventListener('click', () => handleStartGame('timed'));
+        // Rimozione event listener per pulsanti leaderboard
+        // viewLeaderboardSelectionButton.addEventListener('click', () => showScreen(leaderboardSelectionScreen));
+        // viewClassicLeaderboardButton.addEventListener('click', () => displayLeaderboard('classic'));
+        // viewTimedLeaderboardButton.addEventListener('click', () => displayLeaderboard('timed'));
+        // backToHomeButton.addEventListener('click', () => showScreen(nameScreenContainer));
+
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function startQuiz() {
+            if (allQuestions.length === 0) {
+                showScreen(nameScreenContainer); 
+                nameError.textContent = "Errore: impossibile avviare il quiz, domande non caricate.";
+                return;
+            }
+            currentQuizQuestions = shuffleArray(allQuestions); 
+            if (currentGameMode === 'classic') {
+                currentQuizQuestions = currentQuizQuestions.slice(0, CLASSIC_QUESTIONS_PER_QUIZ);
+            }
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = TIMED_MODE_DURATION;
+            clearInterval(timerInterval); 
+
+            if (currentGameMode === 'timed') {
+                quizModeTitle.textContent = "Modalità a Tempo!";
+                timerDisplayContainer.classList.remove('hidden');
+                scoreDisplayTimedMode.classList.remove('hidden');
+                currentScoreTimed.textContent = score;
+                progressBarContainer.classList.add('hidden');
+                questionNumberElement.classList.add('hidden'); 
+                startTimer();
+            } else { 
+                quizModeTitle.textContent = "Modalità Classica!";
+                timerDisplayContainer.classList.add('hidden');
+                scoreDisplayTimedMode.classList.add('hidden');
+                progressBarContainer.classList.remove('hidden');
+                questionNumberElement.classList.remove('hidden');
+            }
+            
+            showScreen(quizAppDiv); 
+            questionContainer.classList.remove('hidden'); 
+            scoreContainer.classList.add('hidden'); 
+            // leaderboardDisplayScreen.classList.add('hidden'); // Rimosso
+
+            if (currentQuizQuestions.length > 0) {
+                loadQuestion();
+            } else {
+                questionTextElement.textContent = "Errore: Non ci sono abbastanza domande.";
+                optionsContainer.innerHTML = '';
+                if(currentGameMode === 'classic') progressBar.style.width = '0%';
+            }
+        }
+
+        function startTimer() {
+            updateTimerDisplay(); 
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    finalizeQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+
+        function loadQuestion() {
+            if (currentGameMode === 'timed' && timeLeft <= 0) return;
+            if (currentQuestionIndex >= currentQuizQuestions.length) {
+                finalizeQuiz();
+                return;
+            }
+            if (currentGameMode === 'classic' && currentQuestionIndex >= CLASSIC_QUESTIONS_PER_QUIZ) {
+                finalizeQuiz();
+                return;
+            }
+
+            const currentQuestion = currentQuizQuestions[currentQuestionIndex];
+            questionTextElement.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = ''; 
+
+            const shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button', 'w-full', 'bg-yellow-50', 'hover:bg-yellow-100', 'text-yellow-800', 'font-medium', 'py-2.5', 'px-3', 'rounded-lg', 'shadow-sm', 'transition', 'duration-150', 'ease-in-out', 'text-left', 'sm:text-center', 'text-sm', 'sm:text-base');
+                button.onclick = () => selectAnswer(option, currentQuestion.correctAnswer);
+                optionsContainer.appendChild(button);
+            });
+
+            if (currentGameMode === 'classic') {
+                questionNumberElement.textContent = `Domanda ${currentQuestionIndex + 1} di ${CLASSIC_QUESTIONS_PER_QUIZ}`;
+                updateProgressBar();
+            } else {
+                 questionNumberElement.textContent = `Domanda ${currentQuestionIndex + 1}`; 
+            }
+        }
+
+        function updateProgressBar() { 
+            if (currentGameMode === 'classic') {
+                const progressPercentage = ((currentQuestionIndex) / CLASSIC_QUESTIONS_PER_QUIZ) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+            }
+        }
+
+        function selectAnswer(selectedOption, correctAnswer) {
+            if (currentGameMode === 'timed' && timeLeft <= 0) return; 
+
+            if (selectedOption === correctAnswer) {
+                score += (currentGameMode === 'timed' ? 1 : 0.5);
+            } else {
+                if (currentGameMode === 'timed') {
+                    score -= 0.5;
+                }
+            }
+            
+            if (currentGameMode === 'timed') {
+                currentScoreTimed.textContent = score.toLocaleString('it-IT');
+            }
+            
+            Array.from(optionsContainer.children).forEach(button => button.disabled = true);
+
+            currentQuestionIndex++;
+            const isLastQuestionClassic = currentGameMode === 'classic' && currentQuestionIndex >= CLASSIC_QUESTIONS_PER_QUIZ;
+            const isLastQuestionOverall = currentQuestionIndex >= currentQuizQuestions.length;
+
+            if (isLastQuestionClassic || isLastQuestionOverall || (currentGameMode === 'timed' && timeLeft <=0) ) {
+                 finalizeQuiz();
+            } else {
+                 loadQuestion(); 
+            }
+        }
+
+        async function finalizeQuiz() { // Rimossa la parte async se non ci sono più chiamate await (es. a Firestore)
+            clearInterval(timerInterval); 
+            questionContainer.classList.add('hidden');
+            timerDisplayContainer.classList.add('hidden'); 
+            scoreDisplayTimedMode.classList.add('hidden'); 
+            scoreContainer.classList.remove('hidden'); 
+            
+            if(currentGameMode === 'classic') progressBar.style.width = '100%';
+
+            let feedbackMsg = "";
+            if (currentGameMode === 'classic') {
+                const totalPossibleScore = CLASSIC_QUESTIONS_PER_QUIZ * 0.5;
+                finalScoreText.textContent = `Punteggio Modalità Classica: ${score.toLocaleString('it-IT')} / ${totalPossibleScore.toLocaleString('it-IT')}`;
+                if (score === totalPossibleScore) feedbackMsg = "Commento per punteggio perfetto (Classica).";
+                else if (score >= totalPossibleScore * 0.8) feedbackMsg = "Commento per punteggio molto alto (Classica).";
+                else if (score >= totalPossibleScore * 0.5) feedbackMsg = "Commento per punteggio medio (Classica).";
+                else feedbackMsg = "Commento per punteggio basso (Classica).";
+            } else { 
+                finalScoreText.textContent = `Punteggio Modalità a Tempo: ${score.toLocaleString('it-IT')}`;
+                 if (score >= 15) feedbackMsg = "Ottimo tempo! Sei un fulmine!";
+                 else if (score >= 5) feedbackMsg = "Buon ritmo, continua così!";
+                 else feedbackMsg = "Puoi fare di meglio la prossima volta!";
+            }
+            scoreFeedbackText.textContent = feedbackMsg;
+
+            // Rimossa la logica di salvataggio in Firebase
+            // if (db && currentPlayerName) { 
+            //     const leaderboardToUpdate = currentGameMode === 'classic' ? LEADERBOARD_COLLECTION_CLASSIC : LEADERBOARD_COLLECTION_TIMED;
+            //     try {
+            //         await addDoc(collection(db, leaderboardToUpdate), {
+            //             name: currentPlayerName, 
+            //             score: parseFloat(score.toFixed(1)),
+            //             timestamp: serverTimestamp() 
+            //         });
+            //         console.log(`Punteggio salvato in classifica ${currentGameMode}!`);
+            //     } catch (e) {
+            //         console.error("Errore nel salvataggio del punteggio: ", e);
+            //         scoreFeedbackText.textContent += " (Errore nel salvare il punteggio online)";
+            //     }
+            // } else if (!db) {
+            //      scoreFeedbackText.textContent += " (Classifica offline)";
+            // }
+            console.log(`Quiz terminato. Modalità: ${currentGameMode}, Nome: ${currentPlayerName}, Punteggio: ${score}`);
+        }
+        
+        // Rimossa la funzione generateDummyScores e displayLeaderboard
+        
+        restartButton.addEventListener('click', () => { 
+            showScreen(quizLoadingMessage);
+            setTimeout(startQuiz, 700); 
+        });
+        // showThisLeaderboardButton.addEventListener('click', () => displayLeaderboard(currentGameMode)); // Rimosso
+        
+        // backToLeaderboardSelectionButton.addEventListener('click', () => showScreen(leaderboardSelectionScreen)); // Rimosso
+        // playAgainFromLeaderboardButton.addEventListener('click', () => { // Rimosso
+        //     playerNameInput.value = ""; 
+        //     showScreen(nameScreenContainer);
+        // });
+
+        // Inizializza le domande e poi mostra la schermata iniziale
+        if (defaultQuestionsPool && defaultQuestionsPool.length > 0) {
+            allQuestions = [...defaultQuestionsPool];
+            startClassicModeButton.disabled = false;
+            startTimedModeButton.disabled = false;
+            showScreen(nameScreenContainer);
+        } else {
+            nameError.textContent = "Errore: domande non definite nel codice.";
+            startClassicModeButton.disabled = true;
+            startTimedModeButton.disabled = true;
+        }
+
+    </script>
+</body>
+</html>
