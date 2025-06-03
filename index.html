@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #fefce8; 
+            background-color: #fefce8; /* Giallo paglierino chiaro per lo sfondo */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -20,10 +20,10 @@
         }
         .app-container {
             width: 100%;
-            max-width: 768px;
+            max-width: 768px; /* Aumentato per schermi più grandi */
             background-color: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            border-radius: 16px; /* Angoli più arrotondati */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); /* Ombra più pronunciata */
             padding: 1.5rem;
         }
         @media (min-width: 640px) {
@@ -34,15 +34,15 @@
 
         .option-button {
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
-            border: 1px solid #fbbf24;
+            border: 1px solid #fbbf24; /* Giallo ambrato per il bordo */
         }
-        .option-button:hover {
-            background-color: #fde68a;
+        .option-button:hover:not(:disabled) { /* Aggiunto :not(:disabled) */
+            background-color: #fde68a; /* Giallo più chiaro al passaggio del mouse */
             box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
         }
-        .option-button:active {
+        .option-button:active:not(:disabled) { /* Aggiunto :not(:disabled) */
             transform: scale(0.97);
-            background-color: #facc15;
+            background-color: #facc15; /* Giallo più scuro quando premuto */
         }
         /* Stili per il contenitore del logo SVG */
         .header-logo-wrapper {
@@ -57,47 +57,47 @@
             width: 100%;
             height: 100%;
         }
-        .progress-bar-container { 
+        .progress-bar-container {
             width: 100%;
-            background-color: #f3f4f6;
+            background-color: #f3f4f6; /* Grigio chiaro per lo sfondo della barra */
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 1rem;
         }
         .progress-bar {
             height: 10px;
-            background-color: #fbbf24;
+            background-color: #fbbf24; /* Giallo ambrato per la barra di progresso */
             width: 0%;
             transition: width 0.3s ease-in-out;
             border-radius: 8px;
         }
         .timer-display {
-            font-size: 1.875rem; 
+            font-size: 1.875rem; /* 30px */
             font-weight: 700;
-            color: #d97706; 
+            color: #d97706; /* Arancione scuro per il timer */
             margin-bottom: 1rem;
             padding: 0.5rem;
-            background-color: #fef3c7; 
+            background-color: #fef3c7; /* Giallo molto chiaro per lo sfondo del timer */
             border-radius: 8px;
-            border: 2px solid #fcd34d; 
+            border: 2px solid #fcd34d; /* Giallo dorato per il bordo del timer */
         }
         .action-button {
-             background-color: #f59e0b;
-             color: white;
-             font-weight: 600;
-             padding: 0.65rem 1.25rem;
-             border-radius: 8px;
-             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-             transition: background-color 0.2s ease;
+            background-color: #f59e0b; /* Arancione per i pulsanti d'azione */
+            color: white;
+            font-weight: 600;
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.2s ease;
         }
         .action-button:hover {
-            background-color: #d97706;
+            background-color: #d97706; /* Arancione più scuro al passaggio del mouse */
         }
-        .mode-button { 
-            background-color: #22c55e; 
+        .mode-button { /* Pulsante modalità a tempo */
+            background-color: #22c55e; /* Verde */
         }
         .mode-button:hover {
-            background-color: #16a34a; 
+            background-color: #16a34a; /* Verde più scuro */
         }
         .share-button {
             background-color: #3b82f6; /* Blu per il pulsante Condividi */
@@ -132,6 +132,10 @@
         input[type=number] {
           -moz-appearance: textfield;
         }
+        .stats-timed-mode {
+            font-size: 0.9rem;
+            color: #4b5563; /* Grigio */
+        }
     </style>
 </head>
 <body>
@@ -141,25 +145,28 @@
         <div id="nameScreenContainer" class="text-center">
             <div class="header-logo-wrapper mb-4"> <!-- Wrapper per il logo con margine specifico -->
                 <svg class="header-logo-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Icona Birra">
-                  <defs>
-                    <linearGradient id="beerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#FBBF24;"/>
-                      <stop offset="100%" style="stop-color:#F59E0B;"/>
-                    </linearGradient>
-                    <linearGradient id="foamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#FFFFFF;"/>
-                      <stop offset="100%" style="stop-color:#F0F0F0;"/>
-                    </linearGradient>
-                  </defs>
-                  <path d="M12 14 C12 10 16 6 20 6 L44 6 C48 6 52 10 52 14 L52 54 C52 58 48 62 44 62 L20 62 C16 62 12 58 12 54 Z" fill="url(#beerGrad)" stroke="#D97706" stroke-width="2"/>
-                  <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="url(#beerGrad)" stroke-width="7" stroke-linecap="round"/>
-                  <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="#D97706" stroke-width="9" stroke-linecap="round"/>
-                  <ellipse cx="22" cy="14" rx="8" ry="5" fill="url(#foamGrad)"/>
-                  <ellipse cx="32" cy="12" rx="10" ry="6" fill="url(#foamGrad)"/>
-                  <ellipse cx="42" cy="14" rx="8" ry="5" fill="url(#foamGrad)"/>
+                    <defs>
+                        <linearGradient id="beerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FBBF24;"/>
+                            <stop offset="100%" style="stop-color:#F59E0B;"/>
+                        </linearGradient>
+                        <linearGradient id="foamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFFFFF;"/>
+                            <stop offset="100%" style="stop-color:#F0F0F0;"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Corpo del boccale -->
+                    <path d="M12 14 C12 10 16 6 20 6 L44 6 C48 6 52 10 52 14 L52 54 C52 58 48 62 44 62 L20 62 C16 62 12 58 12 54 Z" fill="url(#beerGrad)" stroke="#D97706" stroke-width="2"/>
+                    <!-- Manico del boccale -->
+                    <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="url(#beerGrad)" stroke-width="7" stroke-linecap="round"/>
+                    <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="#D97706" stroke-width="9" stroke-linecap="round"/> <!-- Bordo più scuro per il manico -->
+                    <!-- Schiuma -->
+                    <ellipse cx="22" cy="14" rx="8" ry="5" fill="url(#foamGrad)"/>
+                    <ellipse cx="32" cy="12" rx="10" ry="6" fill="url(#foamGrad)"/>
+                    <ellipse cx="42" cy="14" rx="8" ry="5" fill="url(#foamGrad)"/>
                 </svg>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-yellow-600 mb-3">Beerko beer quiz!</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-yellow-600 mb-3">Beerko Beer Quiz!</h1>
             <p class="text-gray-600 mb-2 text-sm sm:text-base">Inserisci il tuo nome (max 40 caratteri):</p>
             <input type="text" id="playerNameInput" maxlength="40" class="input-field mb-3 w-full max-w-sm mx-auto" placeholder="Il tuo nome">
             <p id="nameError" class="text-red-500 text-xs mb-4 h-4"></p>
@@ -175,30 +182,37 @@
         <div id="quizApp" class="hidden">
              <div class="header-logo-wrapper"> <!-- Wrapper per il logo -->
                 <svg class="header-logo-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Icona Birra">
-                  <defs>
-                    <linearGradient id="beerGrad2" x1="0%" y1="0%" x2="0%" y2="100%"> {/* ID diverso per evitare conflitti se SVG fosse ripetuto con lo stesso ID defs */}
-                      <stop offset="0%" style="stop-color:#FBBF24;"/>
-                      <stop offset="100%" style="stop-color:#F59E0B;"/>
-                    </linearGradient>
-                    <linearGradient id="foamGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color:#FFFFFF;"/>
-                      <stop offset="100%" style="stop-color:#F0F0F0;"/>
-                    </linearGradient>
-                  </defs>
-                  <path d="M12 14 C12 10 16 6 20 6 L44 6 C48 6 52 10 52 14 L52 54 C52 58 48 62 44 62 L20 62 C16 62 12 58 12 54 Z" fill="url(#beerGrad2)" stroke="#D97706" stroke-width="2"/>
-                  <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="url(#beerGrad2)" stroke-width="7" stroke-linecap="round"/>
-                  <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="#D97706" stroke-width="9" stroke-linecap="round"/>
-                  <ellipse cx="22" cy="14" rx="8" ry="5" fill="url(#foamGrad2)"/>
-                  <ellipse cx="32" cy="12" rx="10" ry="6" fill="url(#foamGrad2)"/>
-                  <ellipse cx="42" cy="14" rx="8" ry="5" fill="url(#foamGrad2)"/>
+                    <defs>
+                        <linearGradient id="beerGrad2" x1="0%" y1="0%" x2="0%" y2="100%"> {/* ID diverso per evitare conflitti se SVG fosse ripetuto con lo stesso ID defs */}
+                            <stop offset="0%" style="stop-color:#FBBF24;"/>
+                            <stop offset="100%" style="stop-color:#F59E0B;"/>
+                        </linearGradient>
+                        <linearGradient id="foamGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFFFFF;"/>
+                            <stop offset="100%" style="stop-color:#F0F0F0;"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M12 14 C12 10 16 6 20 6 L44 6 C48 6 52 10 52 14 L52 54 C52 58 48 62 44 62 L20 62 C16 62 12 58 12 54 Z" fill="url(#beerGrad2)" stroke="#D97706" stroke-width="2"/>
+                    <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="url(#beerGrad2)" stroke-width="7" stroke-linecap="round"/>
+                    <path d="M52 26 C58 26 58 32 58 32 L58 46 C58 52 52 52 52 46" fill="none" stroke="#D97706" stroke-width="9" stroke-linecap="round"/>
+                    <ellipse cx="22" cy="14" rx="8" ry="5" fill="url(#foamGrad2)"/>
+                    <ellipse cx="32" cy="12" rx="10" ry="6" fill="url(#foamGrad2)"/>
+                    <ellipse cx="42" cy="14" rx="8" ry="5" fill="url(#foamGrad2)"/>
                 </svg>
             </div>
             <h1 id="quizModeTitle" class="text-xl sm:text-2xl font-bold text-center text-yellow-700 mb-2"></h1>
             <div id="timerDisplayContainer" class="hidden text-center">
                 <p class="timer-display" id="timerText">02:00</p>
             </div>
-            <div id="scoreDisplayTimedMode" class="hidden text-center text-lg font-semibold text-blue-600 mb-3">
-                Punteggio: <span id="currentScoreTimed">0</span>
+            <!-- Contenitore per statistiche modalità a tempo -->
+            <div id="statsTimedModeContainer" class="hidden text-center mb-3">
+                <p class="text-lg font-semibold text-blue-600">
+                    Punteggio: <span id="currentScoreTimed">0</span>
+                </p>
+                <div class="flex justify-center gap-4 mt-1 stats-timed-mode">
+                    <p>Corrette: <span id="correctAnswersTimed">0</span></p>
+                    <p>Errate: <span id="incorrectAnswersTimed">0</span></p>
+                </div>
             </div>
 
             <div id="questionContainer" class="mb-5">
@@ -234,9 +248,11 @@
     </div>
 
     <script type="module">
+        // Importazioni Firebase (invariate)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+        // Configurazione Firebase (invariata)
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -259,6 +275,7 @@
             console.warn("Firebase config not found. L'app funzionerà senza funzionalità online.");
         }
 
+        // Elementi DOM 
         const nameScreenContainer = document.getElementById('nameScreenContainer');
         const playerNameInput = document.getElementById('playerNameInput');
         const nameError = document.getElementById('nameError');
@@ -269,8 +286,12 @@
         const quizModeTitle = document.getElementById('quizModeTitle');
         const timerDisplayContainer = document.getElementById('timerDisplayContainer');
         const timerText = document.getElementById('timerText');
-        const scoreDisplayTimedMode = document.getElementById('scoreDisplayTimedMode');
+        
+        const statsTimedModeContainer = document.getElementById('statsTimedModeContainer');
         const currentScoreTimed = document.getElementById('currentScoreTimed');
+        const correctAnswersTimed = document.getElementById('correctAnswersTimed');
+        const incorrectAnswersTimed = document.getElementById('incorrectAnswersTimed');
+
 
         const questionContainer = document.getElementById('questionContainer');
         const progressBarContainer = document.getElementById('progressBarContainer');
@@ -290,17 +311,21 @@
 
         const quizLoadingMessage = document.getElementById('quizLoadingMessage');
 
+        // Variabili di stato del quiz
         let currentPlayerName = "";
         let allQuestions = []; 
         let currentQuizQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
+        let numCorrectAnswers = 0; 
+        let numIncorrectAnswers = 0; 
         let currentGameMode = 'classic'; 
         const CLASSIC_QUESTIONS_PER_QUIZ = 20;
         const TIMED_MODE_DURATION = 120; 
         let timerInterval;
         let timeLeft = TIMED_MODE_DURATION;
 
+        // Pool di domande (invariato)
         const defaultQuestionsPool = [
             { question: "Quale di questi stili è di origini tedesca?", options: ["Geuze", "Bitter", "Gose", "IPA"], correctAnswer: "Gose" },
             { question: "Quale birrificio è considerato l'inventore delle Italian Pils?", options: ["Birrificio Lambrate", "Birrificio Italiano", "Birra Baladin", "Birrificio Menaresta"], correctAnswer: "Birrificio Italiano" },
@@ -367,12 +392,15 @@
 
 
         // --- Funzioni UI e Logica Quiz ---
+        // MODIFICATA: showScreen per non nascondere statsTimedModeContainer di default
         function showScreen(screenElement) {
             nameScreenContainer.classList.add('hidden');
             quizAppDiv.classList.add('hidden');
             quizLoadingMessage.classList.add('hidden');
             scoreContainer.classList.add('hidden'); 
             questionContainer.classList.add('hidden');
+            // La riga che nascondeva statsTimedModeContainer è stata rimossa qui.
+            // La sua visibilità sarà gestita in startQuiz e finalizeQuiz.
             if (screenElement) screenElement.classList.remove('hidden');
         }
 
@@ -399,7 +427,8 @@
         startTimedModeButton.addEventListener('click', () => handleStartGame('timed'));
         homeButton.addEventListener('click', () => {
             playerNameInput.value = ""; 
-            showScreen(nameScreenContainer)
+            statsTimedModeContainer.classList.add('hidden'); // Assicurati sia nascosto tornando alla home
+            showScreen(nameScreenContainer);
         });
 
 
@@ -412,6 +441,7 @@
             return newArray;
         }
 
+        // MODIFICATA: startQuiz per gestire esplicitamente la visibilità di statsTimedModeContainer
         function startQuiz() {
             if (allQuestions.length === 0) {
                 showScreen(nameScreenContainer); 
@@ -425,29 +455,35 @@
             
             currentQuestionIndex = 0;
             score = 0;
+            numCorrectAnswers = 0; 
+            numIncorrectAnswers = 0; 
             timeLeft = TIMED_MODE_DURATION;
             clearInterval(timerInterval); 
 
+            // Mostra la schermata principale del quiz
+            showScreen(quizAppDiv); 
+            questionContainer.classList.remove('hidden'); 
+            scoreContainer.classList.add('hidden'); 
+
+            // Gestisci la visibilità e l'inizializzazione degli elementi specifici della modalità
             if (currentGameMode === 'timed') {
                 quizModeTitle.textContent = "Modalità a Tempo!";
                 timerDisplayContainer.classList.remove('hidden');
-                scoreDisplayTimedMode.classList.remove('hidden');
+                statsTimedModeContainer.classList.remove('hidden'); // Mostra statistiche
                 currentScoreTimed.textContent = score;
+                correctAnswersTimed.textContent = numCorrectAnswers;
+                incorrectAnswersTimed.textContent = numIncorrectAnswers;
                 progressBarContainer.classList.add('hidden');
                 questionNumberElement.classList.add('hidden'); 
                 startTimer();
             } else { 
                 quizModeTitle.textContent = "Modalità Classica!";
                 timerDisplayContainer.classList.add('hidden');
-                scoreDisplayTimedMode.classList.add('hidden');
+                statsTimedModeContainer.classList.add('hidden'); // Nascondi statistiche
                 progressBarContainer.classList.remove('hidden');
                 questionNumberElement.classList.remove('hidden');
             }
             
-            showScreen(quizAppDiv); 
-            questionContainer.classList.remove('hidden'); 
-            scoreContainer.classList.add('hidden'); 
-
             if (currentQuizQuestions.length > 0) {
                 loadQuestion();
             } else {
@@ -495,8 +531,10 @@
             shuffledOptions.forEach(option => {
                 const button = document.createElement('button');
                 button.textContent = option;
+                button.classList.remove('bg-green-500', 'text-white', 'border-green-600', 'bg-red-500', 'border-red-600');
                 button.classList.add('option-button', 'w-full', 'bg-yellow-50', 'hover:bg-yellow-100', 'text-yellow-800', 'font-medium', 'py-2.5', 'px-3', 'rounded-lg', 'shadow-sm', 'transition', 'duration-150', 'ease-in-out', 'text-left', 'sm:text-center', 'text-sm', 'sm:text-base');
-                button.onclick = () => selectAnswer(option, currentQuestion.correctAnswer);
+                button.disabled = false; 
+                button.onclick = () => selectAnswer(button, option, currentQuestion.correctAnswer); 
                 optionsContainer.appendChild(button);
             });
 
@@ -515,39 +553,62 @@
             }
         }
 
-        function selectAnswer(selectedOption, correctAnswer) {
+        function selectAnswer(buttonElement, selectedOption, correctAnswer) {
             if (currentGameMode === 'timed' && timeLeft <= 0) return; 
 
-            if (selectedOption === correctAnswer) {
+            let isCorrect = selectedOption === correctAnswer;
+
+            if (isCorrect) {
                 score += (currentGameMode === 'timed' ? 1 : 0.5);
+                if (currentGameMode === 'timed') {
+                    numCorrectAnswers++;
+                }
             } else {
                 if (currentGameMode === 'timed') {
-                    score -= 0.5;
+                    score -= 0.5; 
+                    numIncorrectAnswers++;
                 }
             }
             
             if (currentGameMode === 'timed') {
                 currentScoreTimed.textContent = score.toLocaleString('it-IT');
+                correctAnswersTimed.textContent = numCorrectAnswers;
+                incorrectAnswersTimed.textContent = numIncorrectAnswers;
             }
             
-            Array.from(optionsContainer.children).forEach(button => button.disabled = true);
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = true;
+                if (currentGameMode === 'classic') {
+                    if (button.textContent === correctAnswer) {
+                        button.classList.remove('bg-yellow-50', 'hover:bg-yellow-100', 'text-yellow-800');
+                        button.classList.add('bg-green-500', 'text-white', 'border-green-600');
+                    } else if (button === buttonElement && !isCorrect) { 
+                        button.classList.remove('bg-yellow-50', 'hover:bg-yellow-100', 'text-yellow-800');
+                        button.classList.add('bg-red-500', 'text-white', 'border-red-600');
+                    }
+                }
+            });
 
-            currentQuestionIndex++;
-            const isLastQuestionClassic = currentGameMode === 'classic' && currentQuestionIndex >= CLASSIC_QUESTIONS_PER_QUIZ;
-            const isLastQuestionOverall = currentQuestionIndex >= currentQuizQuestions.length;
+            const delay = currentGameMode === 'classic' ? 1200 : 300; 
 
-            if (isLastQuestionClassic || isLastQuestionOverall || (currentGameMode === 'timed' && timeLeft <=0) ) {
-                 finalizeQuiz();
-            } else {
-                 loadQuestion(); 
-            }
+            setTimeout(() => {
+                currentQuestionIndex++;
+                const isLastQuestionClassic = currentGameMode === 'classic' && currentQuestionIndex >= CLASSIC_QUESTIONS_PER_QUIZ;
+                const isLastQuestionOverall = currentQuestionIndex >= currentQuizQuestions.length;
+
+                if (isLastQuestionClassic || isLastQuestionOverall || (currentGameMode === 'timed' && timeLeft <=0) ) {
+                    finalizeQuiz();
+                } else {
+                    loadQuestion(); 
+                }
+            }, delay); 
         }
 
         function finalizeQuiz() { 
             clearInterval(timerInterval); 
             questionContainer.classList.add('hidden');
             timerDisplayContainer.classList.add('hidden'); 
-            scoreDisplayTimedMode.classList.add('hidden'); 
+            statsTimedModeContainer.classList.add('hidden'); 
             scoreContainer.classList.remove('hidden'); 
             
             if(currentGameMode === 'classic') progressBar.style.width = '100%';
@@ -556,20 +617,24 @@
 
             let feedbackMsg = "";
             if (currentGameMode === 'classic') {
-                const totalPossibleScore = CLASSIC_QUESTIONS_PER_QUIZ * 0.5;
-                finalScoreText.textContent = `Punteggio Modalità Classica: ${score.toLocaleString('it-IT')} / ${totalPossibleScore.toLocaleString('it-IT')}`;
-                if (score === totalPossibleScore) feedbackMsg = "Commento per punteggio perfetto (Classica).";
-                else if (score >= totalPossibleScore * 0.8) feedbackMsg = "Commento per punteggio molto alto (Classica).";
-                else if (score >= totalPossibleScore * 0.5) feedbackMsg = "Commento per punteggio medio (Classica).";
-                else feedbackMsg = "Commento per punteggio basso (Classica).";
+                const correctAnswersCount = score / 0.5; 
+                const totalQuestions = CLASSIC_QUESTIONS_PER_QUIZ;
+                finalScoreText.textContent = `Hai risposto correttamente a ${correctAnswersCount} domande su ${totalQuestions}.`;
+                
+                const percentage = (correctAnswersCount / totalQuestions);
+                if (percentage === 1) feedbackMsg = "Perfetto! Sei un Mastro Biraio, non c'è un segreto del luppolo che tu non conosca!";
+                else if (percentage >= 0.8) feedbackMsg = "Impressionante! La tua conoscenza è degna di un publican esperto. Offri un giro!";
+                else if (percentage >= 0.5) feedbackMsg = "Te la cavi bene! Hai una solida base, come un buon malto pils. Continua a studiare (e a bere)!";
+                else feedbackMsg = "Sei ancora un neofita, ma ogni grande viaggio inizia con il primo sorso. Salute!";
             } else { 
-                finalScoreText.textContent = `Punteggio Modalità a Tempo: ${score.toLocaleString('it-IT')}`;
-                 if (score >= 15) feedbackMsg = "Ottimo tempo! Sei un fulmine!";
-                 else if (score >= 5) feedbackMsg = "Buon ritmo, continua così!";
-                 else feedbackMsg = "Puoi fare di meglio la prossima volta!";
+                finalScoreText.textContent = `Punteggio finale: ${score.toLocaleString('it-IT')} (Corrette: ${numCorrectAnswers}, Errate: ${numIncorrectAnswers})`;
+                if (score >= 20) feedbackMsg = "Sei più veloce di un lievito Kveik! Un vero campione di velocità e sapienza!";
+                else if (score >= 10) feedbackMsg = "Bel ritmo! Hai la rapidità di una IPA che arriva al palato. Cheers!";
+                else if (score <= 0 && numIncorrectAnswers > numCorrectAnswers) feedbackMsg = "Ops! Forse hai bisogno di un'altra pinta... di studio! Non demordere!";
+                else feedbackMsg = "La prossima volta andrà meglio. Ricorda, una buona birra ha bisogno dei suoi tempi... ma non troppo!";
             }
             scoreFeedbackText.textContent = feedbackMsg;
-            console.log(`Quiz terminato. Modalità: ${currentGameMode}, Nome: ${currentPlayerName}, Punteggio: ${score}`);
+            console.log(`Quiz terminato. Modalità: ${currentGameMode}, Nome: ${currentPlayerName}, Punteggio: ${score}, Corrette: ${numCorrectAnswers}, Errate: ${numIncorrectAnswers}`);
         }
         
         restartButton.addEventListener('click', () => { 
@@ -578,35 +643,91 @@
         });
         
         shareButton.addEventListener('click', () => {
+            const shareTitle = 'Risultato Beerko Beer Quiz!';
+            let shareText = `Ho ottenuto un punteggio di ${score.toLocaleString('it-IT')} nel Beerko Beer Quiz (${currentGameMode === 'classic' ? 'Classica' : 'A Tempo'})!`;
+            if (currentGameMode === 'timed') {
+                shareText = `Ho ottenuto ${score.toLocaleString('it-IT')} punti (${numCorrectAnswers} corrette, ${numIncorrectAnswers} errate) nel Beerko Beer Quiz (Modalità a Tempo)!`;
+            }
+
+            if (currentPlayerName) {
+                 shareText = `${currentPlayerName} ha ottenuto ${score.toLocaleString('it-IT')} punti ${currentGameMode === 'timed' ? `(${numCorrectAnswers} corrette, ${numIncorrectAnswers} errate)` : ''} nel Beerko Beer Quiz (${currentGameMode === 'classic' ? 'Classica' : 'A Tempo'})! Prova anche tu!`;
+            }
+            const shareUrl = window.location.href; 
+
             scoreButtonsContainer.classList.add('hidden');
-            
-            html2canvas(document.body, { 
+
+            html2canvas(document.getElementById('appContainer'), { 
                 backgroundColor: "#fefce8", 
                 windowWidth: document.documentElement.scrollWidth, 
                 windowHeight: document.documentElement.scrollHeight, 
                 onclone: (clonedDoc) => {
-                    // Per assicurarsi che lo sfondo dell'app container sia visibile nello screenshot
-                    // se il body ha uno sfondo diverso o trasparente di default in html2canvas
                     const appContainerClone = clonedDoc.getElementById('appContainer');
                     if (appContainerClone) {
-                        appContainerClone.style.backgroundColor = "#ffffff"; // Sfondo bianco dell'app
+                        appContainerClone.style.backgroundColor = "#ffffff"; 
                     }
+                    const scoreContainerClone = clonedDoc.getElementById('scoreContainer');
+                    if (scoreContainerClone) {
+                         scoreContainerClone.classList.remove('hidden');
+                    }
+                    const nameScreenClone = clonedDoc.getElementById('nameScreenContainer');
+                    if(nameScreenClone) nameScreenClone.classList.add('hidden');
+                    const quizAppClone = clonedDoc.getElementById('quizApp');
+                     if(quizAppClone) quizAppClone.classList.remove('hidden'); 
+                    const questionContainerClone = clonedDoc.getElementById('questionContainer');
+                    if(questionContainerClone) questionContainerClone.classList.add('hidden');
+                    const timerDispClone = clonedDoc.getElementById('timerDisplayContainer');
+                    if(timerDispClone) timerDispClone.classList.add('hidden');
+                    const statsTimedClone = clonedDoc.getElementById('statsTimedModeContainer');
+                    if(statsTimedClone) statsTimedClone.classList.add('hidden');
+
+
                 }
-            }).then(canvas => {
-                const image = canvas.toDataURL("image/png", 1.0);
-                const link = document.createElement('a');
-                link.download = `punteggio_quiz_birra_${currentPlayerName.toLowerCase() || 'giocatore'}.png`;
-                link.href = image;
-                link.click();
-                scoreButtonsContainer.classList.remove('hidden');
+            }).then(async (canvas) => {
+                if (navigator.canShare && navigator.share && typeof canvas.toBlob === 'function') {
+                    canvas.toBlob(async (blob) => {
+                        if (!blob) { 
+                            console.error("Creazione blob fallita, fallback a download.");
+                            downloadScreenshot(canvas);
+                            scoreButtonsContainer.classList.remove('hidden');
+                            return;
+                        }
+                        const file = new File([blob], `punteggio_quiz_birra_${currentPlayerName.toLowerCase().replace(/\s+/g, '_') || 'giocatore'}.png`, { type: blob.type });
+                        try {
+                            await navigator.share({
+                                title: shareTitle,
+                                text: shareText,
+                                url: shareUrl,
+                                files: [file]
+                            });
+                        } catch (err) {
+                            console.warn("Web Share API fallita o annullata:", err);
+                            if (err.name !== 'AbortError') {
+                                // downloadScreenshot(canvas); 
+                            }
+                        } finally {
+                            scoreButtonsContainer.classList.remove('hidden');
+                        }
+                    }, 'image/png');
+                } else {
+                    console.log("Web Share API per file non supportata, fallback a download.");
+                    downloadScreenshot(canvas);
+                    scoreButtonsContainer.classList.remove('hidden');
+                }
             }).catch(err => {
                 console.error("Errore durante la creazione dello screenshot:", err);
                 scoreButtonsContainer.classList.remove('hidden');
-                const nameErrorElement = document.getElementById('nameError'); 
-                if(nameErrorElement) nameErrorElement.textContent = "Impossibile creare lo screenshot.";
-                else console.error("Elemento per messaggi di errore non trovato.");
+                const errorElement = document.getElementById('nameError'); 
+                if(errorElement) errorElement.textContent = "Impossibile creare lo screenshot per la condivisione.";
             });
         });
+
+        function downloadScreenshot(canvas) {
+            const image = canvas.toDataURL("image/png", 1.0);
+            const link = document.createElement('a');
+            link.download = `punteggio_quiz_birra_${currentPlayerName.toLowerCase().replace(/\s+/g, '_') || 'giocatore'}.png`;
+            link.href = image;
+            link.click();
+        }
 
 
         // Inizializza le domande e poi mostra la schermata iniziale
@@ -619,6 +740,7 @@
             nameError.textContent = "Errore: domande non definite nel codice.";
             startClassicModeButton.disabled = true;
             startTimedModeButton.disabled = true;
+            showScreen(nameScreenContainer); 
         }
 
     </script>
